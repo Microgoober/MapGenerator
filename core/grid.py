@@ -119,3 +119,37 @@ class HexGrid(BaseGrid):
 
     def __repr__(self) -> str:
         return f"HexGrid(radius={self.radius})"
+
+class HexGridRect(BaseGrid):
+    """Rectangular hex field using axial coords (q, r).
+
+    Unlike HexGrid (disk-shaped), this bounds the field to a rectangle
+    in axial space, so outdoor generators can iterate 0..width, 0..height.
+    """
+
+    def __init__(self, width: int, height: int):
+        if width <= 0 or height <= 0:
+            raise ValueError("Grid dimensions must be positive.")
+        self.width = width
+        self.height = height
+
+    def is_valid(self, coord):
+        try:
+            q, r = coord
+        except (TypeError, ValueError):
+            return False
+        return 0 <= q < self.width and 0 <= r < self.height
+
+    def get_neighbors(self, coord):
+        q, r = coord
+        directions = [(+1, 0), (+1, -1), (0, -1), (-1, 0), (-1, +1), (0, +1)]
+        return [c for c in ((q + dq, r + dr) for dq, dr in directions)
+                if self.is_valid(c)]
+
+    def get_distance(self, coord_a, coord_b):
+        aq, ar = coord_a
+        bq, br = coord_b
+        return (abs(aq - bq) + abs(ar - br) + abs((aq + ar) - (bq + br))) // 2
+
+    def __repr__(self):
+        return f"HexGridRect({self.width}x{self.height})"

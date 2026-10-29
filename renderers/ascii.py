@@ -2,7 +2,7 @@
 """ASCII renderer for MapData. Prints a map to the terminal."""
 
 from core.map import MapData
-from core.grid import SquareGrid, HexGrid
+from core.grid import SquareGrid, HexGrid, HexGridRect
 
 
 # Display glyph per tile type. Extend as we add more tile types.
@@ -12,6 +12,8 @@ TILE_GLYPHS = {
     "door": "+",
     "stairs": ">",
     "forest": "♣",
+    "tree": "♣",
+    "clearing": "·",
     "ruin": "R",
     "water": "~",
     "road": "=",
@@ -25,7 +27,7 @@ def render_ascii(mapdata: MapData, empty_glyph: str = " ") -> str:
     Currently supports SquareGrid. HexGrid support will be added
     when we build the world/outdoor generators.
     """
-    if isinstance(mapdata.grid, SquareGrid):
+    if isinstance(mapdata.grid, (SquareGrid, HexGridRect)):
         return _render_square(mapdata, empty_glyph)
     if isinstance(mapdata.grid, HexGrid):
         raise NotImplementedError("Hex ASCII rendering is a future commit.")
